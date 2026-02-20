@@ -1,0 +1,41 @@
+{
+  "name": "n8n-nodes-piperun",
+  "version": "0.1.0",
+  "description": "Integração com PipeRun CRM de Vendas brasileiro - gerencie pessoas, negócios, fases e mais.",
+  "keywords": [
+    "n8ncommunity-node-package"
+  ],
+  "license": "MIT",
+  "author": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc && gulp build:icons",
+    "dev": "tsc --watch",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "release": "npm run build && npm publish",
+    "format": "prettier nodes credentials --write"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/PiperunApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/Piperun/Piperun.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.4.0",
+    "@typescript-eslint/parser": "^5.4.0",
+    "eslint": "^7.32.0",
+    "eslint-plugin-n8n-nodes-base": "^1.11.0",
+    "gulp": "^4.0.2",
+    "prettier": "^2.7.1",
+    "typescript": "^5.2.2",
+    "n8n-workflow": "^1.42.1"
+  }
+}
