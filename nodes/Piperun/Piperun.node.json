@@ -1,20 +1,18 @@
 {
-    "node": "n8n-nodes-piperun.piperun",
-    "nodeVersion": "1.0",
-    "codexVersion": "1.0",
-    "categories": [
-        "Sales"
+  "node": "n8n-nodes-piperun.piperun",
+  "nodeVersion": "1.0",
+  "codexVersion": "1.0",
+  "categories": ["Sales"],
+  "resources": {
+    "credentialDocumentation": [
+      {
+        "url": "https://developers.pipe.run/docs/token-autentica%C3%A7%C3%A3o"
+      }
     ],
-    "resources": {
-        "credentialDocumentation": [
-            {
-                "url": "https://developers.pipe.run/docs/token-autentica%C3%A7%C3%A3o"
-            }
-        ],
-        "primaryDocumentation": [
-            {
-                "url": "https://developers.pipe.run/"
-            }
-        ]
-    }
+    "primaryDocumentation": [
+      {
+        "url": "https://developers.pipe.run/"
+      }
+    ]
+  }
 }

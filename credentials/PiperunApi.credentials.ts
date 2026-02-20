@@ -3,46 +3,49 @@ import {
 	ICredentialTestRequest,
 	ICredentialType,
 	INodeProperties,
-} from 'n8n-workflow';
+} from "n8n-workflow";
 
 export class PiperunApi implements ICredentialType {
-	name = 'piperunApi';
-	displayName = 'Piperun API';
-	documentationUrl = 'https://developers.pipe.run/';
+	name = "piperunApi";
+	displayName = "Piperun API";
+	documentationUrl = "https://developers.pipe.run/";
 
 	properties: INodeProperties[] = [
 		{
-			displayName: 'Base URL',
-			name: 'baseUrl',
-			type: 'string',
-			default: 'https://app.pipe.run/api/v1',
-			description: 'A URL base da sua conta para a API (ex: https://dominio.pipe.run/api/v1)',
+			displayName: "Base URL",
+			name: "baseUrl",
+			type: "string",
+			default: "https://api.pipe.run/v1/",
+			description:
+				"The base URL of your account for the API (e.g., https://api.pipe.run/v1/)",
 			required: true,
 		},
 		{
-			displayName: 'Token',
-			name: 'token',
-			type: 'string',
+			displayName: "Token",
+			name: "token",
+			type: "string",
 			typeOptions: { password: true },
-			default: '',
-			description: 'O seu Token de Integração do PipeRun',
+			default: "",
+			description: "Your PipeRun Integration Token",
 			required: true,
 		},
 	];
 
 	authenticate: IAuthenticateGeneric = {
-		type: 'generic',
+		type: "generic",
 		properties: {
 			headers: {
-				Token: '{{$credentials.token}}',
+				token: "={{$credentials.token}}",
+				accept: "application/json",
+				"content-type": "application/json",
 			},
 		},
 	};
 
 	test: ICredentialTestRequest = {
 		request: {
-			baseURL: '={{$credentials.baseUrl}}',
-			url: '/pessoas',
+			baseURL: "={{$credentials.baseUrl}}",
+			url: "me",
 		},
 	};
 }
