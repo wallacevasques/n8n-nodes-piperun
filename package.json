@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-piperun",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Unofficial n8n community node for PipeRun CRM. Automate your sales pipeline with full support for Deals, Persons, Companies, Proposals, Signatures, Notes, Activities, Tags, Funnels and more.",
   "keywords": [
     "n8n-community-node-package",

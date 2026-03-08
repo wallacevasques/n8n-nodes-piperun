@@ -16,7 +16,7 @@ Manage your individual contacts and leads.
 | --------- | --------------------------------------------------------- |
 | Create    | Add a new person to the CRM                               |
 | Get       | Retrieve a specific person by ID                          |
-| List      | List all persons with optional filters (name, email, CPF) |
+| List      | List persons with filters (name, email, CPF, company, tag) |
 | Update    | Edit person data (name, phone, address, custom fields)    |
 | Delete    | Permanently remove a person from the CRM                  |
 
@@ -44,7 +44,7 @@ Full lifecycle management of sales opportunities.
 | ------------- | -------------------------------------------------------------------- |
 | Create        | Open a new deal in a specific funnel and stage                       |
 | Get           | Get full details of a deal (value, stage, tags, custom fields)       |
-| List          | List deals with rich filters (status, pipeline, stage, dates, owner) |
+| List          | List deals with rich filters (status, pipeline, stage, dates, owner, person, company, tag) |
 | Update        | Modify any deal attribute                                            |
 | Delete        | Remove a deal permanently                                            |
 | Move To Stage | Change a deal's stage within the funnel                              |
@@ -124,6 +124,33 @@ Organize deals and persons with custom labels.
 | List      | List tags with filters (name, active, belongs-to entity) |
 | Update    | Rename or modify a tag                                   |
 | Delete    | Remove a tag                                             |
+
+---
+
+### 🛒 Item (`item`)
+
+Manage your product/service catalog and recurring revenue items.
+
+| Operation | Description                                               |
+| --------- | --------------------------------------------------------- |
+| Create    | Add a new item (product, service, or MRR)                 |
+| Get       | Retrieve a specific item by ID                            |
+| List      | List items with filters (name, code, category, type)      |
+| Update    | Modify item data (price, description, category)           |
+| Delete    | Remove an item from the catalog                           |
+
+---
+
+### 👥 User (`user`)
+
+Manage CRM users and their profiles.
+
+| Operation | Description                                               |
+| --------- | --------------------------------------------------------- |
+| Create    | Add a new user to the CRM                                 |
+| Get       | Retrieve a specific user by ID                            |
+| List      | List users with filters (name, email, active status)      |
+| Update    | Modify user data (name, email, phone, avatar)             |
 
 ---
 

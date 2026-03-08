@@ -59,6 +59,14 @@ export class Piperun implements INodeType {
 						value: "funnel",
 					},
 					{
+						name: "Item",
+						value: "item",
+					},
+					{
+						name: "User",
+						value: "user",
+					},
+					{
 						name: "Note",
 						value: "note",
 					},
@@ -524,6 +532,24 @@ export class Piperun implements INodeType {
 						default: "",
 						routing: { send: { property: "cpf", type: "query" } },
 					},
+					{
+						displayName: "Company ID",
+						name: "company_id",
+						type: "string",
+						default: "",
+						routing: {
+							send: { property: "company_id", type: "query" },
+						},
+					},
+					{
+						displayName: "Tag ID",
+						name: "tag_id",
+						type: "string",
+						default: "",
+						routing: {
+							send: { property: "tag_id", type: "query" },
+						},
+					},
 				],
 			},
 
@@ -642,7 +668,6 @@ export class Piperun implements INodeType {
 						default: "",
 						routing: { send: { property: "title", type: "query" } },
 					},
-
 					{
 						displayName: "Sort",
 						name: "sort",
@@ -1870,38 +1895,39 @@ export class Piperun implements INodeType {
 					"The unique identifier (numeric ID) of the record in the PipeRun database.",
 			},
 
-						{
-				displayName: 'Return All',
-				name: 'returnAll',
-				type: 'boolean',
+			{
+				displayName: "Return All",
+				name: "returnAll",
+				type: "boolean",
 				displayOptions: {
 					show: {
 						operation: [
-"list",
+							"list",
 							"listOriginGroups",
 							"listOrigins",
 							"listLinkedItems",
 							"listSignatureDocuments",
-							"listSignatures"
+							"listSignatures",
 						],
 					},
 				},
 				default: false,
-				description: 'Whether to return all results or only up to a given limit',
+				description:
+					"Whether to return all results or only up to a given limit",
 			},
 			{
-				displayName: 'Limit',
-				name: 'limit',
-				type: 'number',
+				displayName: "Limit",
+				name: "limit",
+				type: "number",
 				displayOptions: {
 					show: {
 						operation: [
-"list",
+							"list",
 							"listOriginGroups",
 							"listOrigins",
 							"listLinkedItems",
 							"listSignatureDocuments",
-							"listSignatures"
+							"listSignatures",
 						],
 						returnAll: [false],
 					},
@@ -1910,7 +1936,7 @@ export class Piperun implements INodeType {
 					minValue: 1,
 				},
 				default: 50,
-				description: 'Max number of results to return',
+				description: "Max number of results to return",
 			},
 
 			{
@@ -2596,6 +2622,670 @@ export class Piperun implements INodeType {
 						description: "Professional role or position.",
 						routing: {
 							send: { property: "job_title", type: "body" },
+						},
+					},
+				],
+			},
+
+			// ----------------------------------
+			//         Item Operations
+			// ----------------------------------
+			{
+				displayName: "Operation",
+				name: "operation",
+				type: "options",
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ["item"],
+					},
+				},
+				options: [
+					{
+						name: "Create",
+						value: "create",
+						description: "Create a new item (product/service/MRR)",
+						action: "Create an item",
+						routing: {
+							request: {
+								method: "POST",
+								url: "items",
+							},
+						},
+					},
+					{
+						name: "Delete",
+						value: "delete",
+						description: "Delete an item",
+						action: "Delete an item",
+						routing: {
+							request: {
+								method: "DELETE",
+								url: '=items/{{$parameter["id"]}}',
+							},
+						},
+					},
+					{
+						name: "Get",
+						value: "get",
+						description: "Get an item by ID",
+						action: "Get an item",
+						routing: {
+							request: {
+								method: "GET",
+								url: '=items/{{$parameter["id"]}}',
+							},
+						},
+					},
+					{
+						name: "List",
+						value: "list",
+						description: "List items",
+						action: "List items",
+						routing: {
+							request: {
+								method: "GET",
+								url: "items",
+							},
+							output: {
+								postReceive: [
+									{
+										type: "rootProperty",
+										properties: {
+											property: "data",
+										},
+									},
+									{
+										type: "limit",
+										properties: {
+											maxResults: "={{$parameter.limit}}",
+										},
+									},
+								],
+							},
+							operations: {
+								pagination: {
+									type: "generic",
+									properties: {
+										continue:
+											"={{!!$response.body.meta.cursor.next}}",
+										request: {
+											qs: {
+												cursor: "={{$response.body.meta.cursor.next}}",
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						name: "Update",
+						value: "update",
+						description: "Update an item",
+						action: "Update an item",
+						routing: {
+							request: {
+								method: "PUT",
+								url: '=items/{{$parameter["id"]}}',
+							},
+						},
+					},
+				],
+				default: "list",
+			},
+
+			// ----------------------------------
+			//         User Operations
+			// ----------------------------------
+			{
+				displayName: "Operation",
+				name: "operation",
+				type: "options",
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ["user"],
+					},
+				},
+				options: [
+					{
+						name: "Create",
+						value: "create",
+						description: "Add a new user to CRM",
+						action: "Create a user",
+						routing: {
+							request: {
+								method: "POST",
+								url: "users",
+							},
+						},
+					},
+					{
+						name: "Get",
+						value: "get",
+						description: "Get a user by ID",
+						action: "Get a user",
+						routing: {
+							request: {
+								method: "GET",
+								url: '=users/{{$parameter["id"]}}',
+							},
+						},
+					},
+					{
+						name: "List",
+						value: "list",
+						description: "List CRM users",
+						action: "List users",
+						routing: {
+							request: {
+								method: "GET",
+								url: "users",
+							},
+							output: {
+								postReceive: [
+									{
+										type: "rootProperty",
+										properties: {
+											property: "data",
+										},
+									},
+									{
+										type: "limit",
+										properties: {
+											maxResults: "={{$parameter.limit}}",
+										},
+									},
+								],
+							},
+							operations: {
+								pagination: {
+									type: "generic",
+									properties: {
+										continue:
+											"={{!!$response.body.meta.cursor.next}}",
+										request: {
+											qs: {
+												cursor: "={{$response.body.meta.cursor.next}}",
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						name: "Update",
+						value: "update",
+						description: "Update an existing user",
+						action: "Update a user",
+						routing: {
+							request: {
+								method: "PUT",
+								url: '=users/{{$parameter["id"]}}',
+							},
+						},
+					},
+				],
+				default: "list",
+			},
+
+			// ----------------------------------
+			//            Item Fields
+			// ----------------------------------
+			{
+				displayName: "ID",
+				name: "id",
+				type: "string",
+				displayOptions: {
+					show: {
+						resource: ["item"],
+						operation: ["get", "update", "delete"],
+					},
+				},
+				default: "",
+				required: true,
+				description: "The ID of the item",
+			},
+			{
+				displayName: "Name",
+				name: "name",
+				type: "string",
+				displayOptions: {
+					show: {
+						resource: ["item"],
+						operation: ["create"],
+					},
+				},
+				default: "",
+				required: true,
+				routing: { request: { body: { name: "={{$value}}" } } },
+			},
+			{
+				displayName: "Type",
+				name: "type",
+				type: "options",
+				options: [
+					{ name: "Product (0)", value: 0 },
+					{ name: "Recurrence/MRR (1)", value: 1 },
+					{ name: "Service (2)", value: 2 },
+				],
+				displayOptions: {
+					show: {
+						resource: ["item"],
+						operation: ["create"],
+					},
+				},
+				default: 0,
+				required: true,
+				routing: { request: { body: { type: "={{$value}}" } } },
+			},
+			{
+				displayName: "Additional Fields",
+				name: "itemAdditionalFields",
+				type: "collection",
+				placeholder: "Add Field",
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ["item"],
+						operation: ["create", "update"],
+					},
+				},
+				options: [
+					{
+						displayName: "Brand ID",
+						name: "brand_id",
+						type: "string",
+						default: "",
+						routing: {
+							request: { body: { brand_id: "={{$value}}" } },
+						},
+					},
+					{
+						displayName: "Category ID",
+						name: "category_id",
+						type: "number",
+						default: 0,
+						routing: {
+							request: { body: { category_id: "={{$value}}" } },
+						},
+					},
+					{
+						displayName: "Code",
+						name: "code",
+						type: "string",
+						default: "",
+						routing: { request: { body: { code: "={{$value}}" } } },
+					},
+					{
+						displayName: "Commission",
+						name: "commission",
+						type: "number",
+						default: 0,
+						routing: {
+							request: { body: { commission: "={{$value}}" } },
+						},
+					},
+					{
+						displayName: "Cost",
+						name: "cost",
+						type: "number",
+						typeOptions: { numberPrecision: 2 },
+						default: 0,
+						routing: { request: { body: { cost: "={{$value}}" } } },
+					},
+					{
+						displayName: "Description",
+						name: "description",
+						type: "string",
+						default: "",
+						routing: {
+							request: { body: { description: "={{$value}}" } },
+						},
+					},
+					{
+						displayName: "IPI Tax",
+						name: "ipi_tax",
+						type: "number",
+						typeOptions: { numberPrecision: 2 },
+						default: 0,
+						routing: {
+							request: { body: { ipi_tax: "={{$value}}" } },
+						},
+					},
+					{
+						displayName: "Minimum Value (Selling Price)",
+						name: "minimum_value",
+						type: "number",
+						typeOptions: { numberPrecision: 2 },
+						default: 0,
+						routing: {
+							request: { body: { minimum_value: "={{$value}}" } },
+						},
+					},
+					{
+						displayName: "Photo URL",
+						name: "photo",
+						type: "string",
+						default: "",
+						routing: {
+							request: { body: { photo: "={{$value}}" } },
+						},
+					},
+					{
+						displayName: "Reference",
+						name: "reference",
+						type: "string",
+						default: "",
+						routing: {
+							request: { body: { reference: "={{$value}}" } },
+						},
+					},
+					{
+						displayName: "Status (Inactive)",
+						name: "status",
+						type: "boolean",
+						description:
+							"Whether the item is inactive (true/false). False means active.",
+						default: false,
+						routing: {
+							request: { body: { status: "={{$value}}" } },
+						},
+					},
+				],
+			},
+			{
+				displayName: "Additional Filters",
+				name: "itemAdditionalFilters",
+				type: "collection",
+				placeholder: "Add Filter",
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ["item"],
+						operation: ["list"],
+					},
+				},
+				options: [
+					{
+						displayName: "Brand ID",
+						name: "brand_id",
+						type: "string",
+						default: "",
+						routing: {
+							request: { qs: { brand_id: "={{$value}}" } },
+						},
+					},
+					{
+						displayName: "Category ID",
+						name: "category_id",
+						type: "number",
+						default: 0,
+						routing: {
+							request: { qs: { category_id: "={{$value}}" } },
+						},
+					},
+					{
+						displayName: "Code",
+						name: "code",
+						type: "string",
+						default: "",
+						routing: { request: { qs: { code: "={{$value}}" } } },
+					},
+					{
+						displayName: "Description",
+						name: "description",
+						type: "string",
+						default: "",
+						routing: {
+							request: { qs: { description: "={{$value}}" } },
+						},
+					},
+					{
+						displayName: "Minimum Value",
+						name: "minimum_value",
+						type: "number",
+						typeOptions: { numberPrecision: 2 },
+						default: 0,
+						routing: {
+							request: { qs: { minimum_value: "={{$value}}" } },
+						},
+					},
+					{
+						displayName: "Name",
+						name: "name",
+						type: "string",
+						default: "",
+						routing: { request: { qs: { name: "={{$value}}" } } },
+					},
+					{
+						displayName: "Reference",
+						name: "reference",
+						type: "string",
+						default: "",
+						routing: {
+							request: { qs: { reference: "={{$value}}" } },
+						},
+					},
+					{
+						displayName: "Status (Inactive)",
+						name: "status",
+						type: "boolean",
+						description: "Filter by inactive status",
+						default: false,
+						routing: { request: { qs: { status: "={{$value}}" } } },
+					},
+				],
+			},
+			// ----------------------------------
+			//            User Fields
+			// ----------------------------------
+			{
+				displayName: "ID",
+				name: "id",
+				type: "string",
+				displayOptions: {
+					show: {
+						resource: ["user"],
+						operation: ["get", "update"],
+					},
+				},
+				default: "",
+				required: true,
+				description: "The ID of the user",
+			},
+			{
+				displayName: "Email",
+				name: "email",
+				type: "string",
+				displayOptions: {
+					show: {
+						resource: ["user"],
+						operation: ["create"],
+					},
+				},
+				default: "",
+				required: true,
+				routing: { request: { body: { email: "={{$value}}" } } },
+			},
+			{
+				displayName: "Name",
+				name: "name",
+				type: "string",
+				displayOptions: {
+					show: {
+						resource: ["user"],
+						operation: ["create"],
+					},
+				},
+				default: "",
+				required: true,
+				routing: { request: { body: { name: "={{$value}}" } } },
+			},
+			{
+				displayName: "Additional Fields",
+				name: "userAdditionalFields",
+				type: "collection",
+				placeholder: "Add Field",
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ["user"],
+						operation: ["create", "update"],
+					},
+				},
+				options: [
+					{
+						displayName: "Active",
+						name: "active",
+						type: "boolean",
+						default: true,
+						routing: {
+							request: { body: { active: "={{$value}}" } },
+						},
+					},
+					{
+						displayName: "Avatar URL",
+						name: "avatar",
+						type: "string",
+						default: "",
+						routing: {
+							request: { body: { avatar: "={{$value}}" } },
+						},
+					},
+					{
+						displayName: "Birthday",
+						name: "birth_day",
+						type: "dateTime",
+						default: "",
+						routing: {
+							request: { body: { birth_day: "={{$value}}" } },
+						},
+					},
+					{
+						displayName: "Cellphone",
+						name: "cellphone",
+						type: "string",
+						default: "",
+						routing: {
+							request: { body: { cellphone: "={{$value}}" } },
+						},
+					},
+					{
+						displayName: "CPF",
+						name: "cpf",
+						type: "string",
+						default: "",
+						routing: { request: { body: { cpf: "={{$value}}" } } },
+					},
+					{
+						displayName: "Email",
+						name: "email",
+						type: "string",
+						displayOptions: { show: { "/operation": ["update"] } },
+						default: "",
+						routing: {
+							request: { body: { email: "={{$value}}" } },
+						},
+					},
+					{
+						displayName: "Gender",
+						name: "gender",
+						type: "options",
+						options: [
+							{ name: "Male", value: "Masculino" },
+							{ name: "Female", value: "Feminino" },
+						],
+						default: "Masculino",
+						routing: {
+							request: { body: { gender: "={{$value}}" } },
+						},
+					},
+					{
+						displayName: "Name",
+						name: "name",
+						type: "string",
+						displayOptions: { show: { "/operation": ["update"] } },
+						default: "",
+						routing: { request: { body: { name: "={{$value}}" } } },
+					},
+					{
+						displayName: "Signature Reference Email",
+						name: "signature",
+						type: "string",
+						default: "",
+						routing: {
+							request: { body: { signature: "={{$value}}" } },
+						},
+					},
+					{
+						displayName: "Telephone",
+						name: "telephone",
+						type: "string",
+						default: "",
+						routing: {
+							request: { body: { telephone: "={{$value}}" } },
+						},
+					},
+				],
+			},
+			{
+				displayName: "Additional Filters",
+				name: "userAdditionalFilters",
+				type: "collection",
+				placeholder: "Add Filter",
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ["user"],
+						operation: ["list"],
+					},
+				},
+				options: [
+					{
+						displayName: "Account ID",
+						name: "account_id",
+						type: "string",
+						default: "",
+						routing: {
+							request: { qs: { account_id: "={{$value}}" } },
+						},
+					},
+					{
+						displayName: "Active Status",
+						name: "active",
+						type: "options",
+						options: [
+							{ name: "Active", value: "active" },
+							{ name: "Inactive", value: "inactive" },
+							{ name: "All", value: "all" },
+						],
+						default: "active",
+						routing: { request: { qs: { active: "={{$value}}" } } },
+					},
+					{
+						displayName: "Email",
+						name: "email",
+						type: "string",
+						default: "",
+						routing: { request: { qs: { email: "={{$value}}" } } },
+					},
+					{
+						displayName: "Name",
+						name: "name",
+						type: "string",
+						default: "",
+						routing: { request: { qs: { name: "={{$value}}" } } },
+					},
+					{
+						displayName: "Permission Level",
+						name: "permission",
+						type: "string",
+						default: "",
+						routing: {
+							request: { qs: { permission: "={{$value}}" } },
 						},
 					},
 				],
