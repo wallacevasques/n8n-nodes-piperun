@@ -1,61 +1,219 @@
 # n8n-nodes-piperun
 
-This is an unofficial community node for **[n8n](https://n8n.io/)**, an extendable workflow automation tool. It integrates gracefully with **[PipeRun CRM](https://crmpiperun.com/)**, allowing you to automate your sales pipeline, manage communication limits, and significantly accelerate your commercial operations.
-
-This integration lets you manipulate deals, persons, companies, notes, proposals, and other crucial entities right from your n8n workflows.
+This is an unofficial community node for **[n8n](https://n8n.io/)**, an extendable workflow automation tool. It integrates with **[PipeRun CRM](https://crmpiperun.com/)**, allowing you to automate your entire sales pipeline — from managing deals and contacts to controlling proposals, signatures, and tags.
 
 [n8n Community Node Documentation](https://docs.n8n.io/integrations/community-nodes/)
 
-## ✨ Features
+---
 
-The node covers the core functionality of the PipeRun API using n8n's declarative capabilities and robust API design:
+## ✨ Resources & Operations
 
--   **Person (`pessoa`)**: Manage your contact information. (Create, Get, List, Update, Delete)
--   **Deal (`negócio`)**: Lead and opportunity management. Includes creating deals, moving stages, comprehensive list filters (Open/Won/Lost), and assigning tags. (Create, Get, List, Update, Delete, Move To Stage)
--   **Company (`empresa`)**: Organization databases including tax ID linkage and updates. (Create, Get, List, Update, Delete)
--   **Activity (`atividade`)**: Calendar and task management functionalities for calls and meetings. (Create, Get, List, Update, Delete)
--   **Note (`nota`)**: Full tracking and annotations linked strictly to your deals or persons for timeline tracking. (Create, Get, List, Update, Delete)
--   **Proposal (`proposta`)**: Control over proposals. Including specialized lookups directly from Deal IDs! (Create, Get, List, List From Deal, Update, Delete)
--   **Tag (`tag`)**: Customizing CRM workflows with tagging operations. (Create, Get, List, Update, Delete)
--   **Funnel & Stage**: Easy retrieval of funnel structures and stage IDs. (List)
+### 👤 Person (`pessoa`)
+
+Manage your individual contacts and leads.
+
+| Operation | Description                                               |
+| --------- | --------------------------------------------------------- |
+| Create    | Add a new person to the CRM                               |
+| Get       | Retrieve a specific person by ID                          |
+| List      | List all persons with optional filters (name, email, CPF) |
+| Update    | Edit person data (name, phone, address, custom fields)    |
+| Delete    | Permanently remove a person from the CRM                  |
+
+---
+
+### 🏢 Company (`empresa`)
+
+Manage client organizations and their data.
+
+| Operation | Description                                      |
+| --------- | ------------------------------------------------ |
+| Create    | Add a new company                                |
+| Get       | Retrieve a specific company by ID                |
+| List      | List companies with optional filters             |
+| Update    | Modify company information (name, CNPJ, address) |
+| Delete    | Remove a company from the CRM                    |
+
+---
+
+### 🤝 Deal (`oportunidade`)
+
+Full lifecycle management of sales opportunities.
+
+| Operation     | Description                                                          |
+| ------------- | -------------------------------------------------------------------- |
+| Create        | Open a new deal in a specific funnel and stage                       |
+| Get           | Get full details of a deal (value, stage, tags, custom fields)       |
+| List          | List deals with rich filters (status, pipeline, stage, dates, owner) |
+| Update        | Modify any deal attribute                                            |
+| Delete        | Remove a deal permanently                                            |
+| Move To Stage | Change a deal's stage within the funnel                              |
+
+**Associated Deal Operations:**
+
+| Operation          | Description                                      |
+| ------------------ | ------------------------------------------------ |
+| List Origin Groups | List groups of opportunity origin sources        |
+| Get Origin Group   | Get details of a specific origin group           |
+| List Origins       | List all opportunity origin sources with filters |
+| Get Origin         | Get details of a specific origin source          |
+| List Linked Items  | List products/items linked to an opportunity     |
+| Get Linked Item    | Get details of a specific linked product/item    |
+
+---
+
+### 📋 Activity (`atividade`)
+
+Schedule and track calls, meetings, and tasks.
+
+| Operation | Description                                      |
+| --------- | ------------------------------------------------ |
+| Create    | Create a new activity linked to a deal or person |
+| Get       | Get activity details                             |
+| List      | List activities with date and type filters       |
+| Update    | Modify activity data                             |
+| Delete    | Remove an activity                               |
+
+---
+
+### 📝 Note (`nota`)
+
+Add and manage annotations on deals and contacts.
+
+| Operation | Description                            |
+| --------- | -------------------------------------- |
+| Create    | Create a note tied to a deal or person |
+| Get       | Get a specific note                    |
+| List      | List notes filtered by deal or person  |
+| Update    | Edit a note                            |
+| Delete    | Delete a note                          |
+
+---
+
+### 📄 Proposal (`proposta`)
+
+Control the complete lifecycle of commercial proposals and electronic signatures.
+
+| Operation | Description                                                     |
+| --------- | --------------------------------------------------------------- |
+| Create    | Create a new proposal linked to a deal                          |
+| Get       | Get full details of a specific proposal (values, items, status) |
+| List      | List proposals with filters (deal_id, status, user_id, dates)   |
+| Update    | Modify an existing proposal                                     |
+| Delete    | Remove a proposal                                               |
+
+**Associated Proposal Operations:**
+
+| Operation                | Description                                                  |
+| ------------------------ | ------------------------------------------------------------ |
+| List Signature Documents | List all documents sent for electronic signatures            |
+| Get Signature Document   | Get details of a specific signature document                 |
+| List Signatures          | List individual signatures, filterable by signature document |
+| Get Signature            | Get details of a specific signature record                   |
+
+---
+
+### 🏷️ Tag (`tag`)
+
+Organize deals and persons with custom labels.
+
+| Operation | Description                                              |
+| --------- | -------------------------------------------------------- |
+| Create    | Create a new tag                                         |
+| Get       | Get a specific tag                                       |
+| List      | List tags with filters (name, active, belongs-to entity) |
+| Update    | Rename or modify a tag                                   |
+| Delete    | Remove a tag                                             |
+
+---
+
+### 🔀 Funnel (`funil`) & Stage (`etapa`)
+
+Query your sales pipeline structure.
+
+| Operation    | Description                                           |
+| ------------ | ----------------------------------------------------- |
+| List Funnels | Retrieve all sales funnels with name filter           |
+| List Stages  | Retrieve all stages, optionally filtered by funnel ID |
+
+---
 
 ## 🔑 Credentials
 
-PipeRun provides token-based HTTP authentication for integrations.
+PipeRun uses token-based authentication.
 
-1. Locate your **PipeRun API Token** in your PipeRun account platform under **Integrações** (Integrations) or in your user profile screen (`Meus Dados`).
-2. Inside n8n, add a new **Piperun API** credential.
-3. Your **Base URL** defaults to `https://api.pipe.run/v1/`.
-4. Insert your **Token**. It is important to treat this token securely.
+1. In your PipeRun account, go to **Integrações** → **Tokens de Acesso** to find or generate your API token.
+2. In n8n, add a new credential of type **Piperun API**.
+3. Fill in:
+    - **Token**: Your PipeRun API token.
+    - **Base URL**: Defaults to `https://api.pipe.run/v1/` (do **not** change unless you have a custom domain).
 
-> Note: The node actively handles headers (`token`, `accept`, `content-type`) avoiding `401 Unauthorized` mismatches present in older or manual HTTP Node configurations.
+> The node automatically injects required headers (`token`, `Accept: application/json`) on every request.
+
+---
 
 ## 🚀 Installation
 
-To install this node, access your n8n UI, navigate to **Settings -> Community Nodes**, then click **Install**.
+### From n8n UI (Recommended)
 
-Enter `n8n-nodes-piperun` as the npm package name.
+1. In your n8n instance, go to **Settings → Community Nodes**.
+2. Click **Install**.
+3. Enter the package name: `n8n-nodes-piperun`
+4. Confirm and restart n8n when prompted.
+
+### Manual (npm)
+
+```bash
+# In your n8n root directory (where custom nodes are stored):
+npm install n8n-nodes-piperun
+```
 
 ### Local Development Setup
 
-If you wish to modify or contribute to this node:
-
-1. Clone this repository to your local machine.
-2. Run `npm install` to grab the dependencies.
-3. Run `npm run build` to compile the TypeScript code.
-4. Locally link the project using your global npm repository:
-
 ```bash
+# 1. Clone the repository
+git clone https://github.com/wallacevasques/n8n-nodes-piperun.git
+cd n8n-nodes-piperun
+
+# 2. Install dependencies
+npm install
+
+# 3. Build the TypeScript code
+npm run build
+
+# 4. Link to your local n8n instance
 npm link
-cd ~/.n8n/custom # Path to your global custom n8n nodes directory
+
+# In your local n8n custom nodes directory (~/.n8n/custom or equivalent):
 npm link n8n-nodes-piperun
+
+# 5. Start n8n
+n8n start
 ```
+
+---
 
 ## ⚠️ Known Constraints & Best Practices
 
--   **Rate Limiting**: The PipeRun API implements standard rate limits, commonly peaking at **100 requests per minute**. If you design loops or extensive backfills using the `List` operation, please insert a **Wait** node in your n8n workflow to prevent HTTP `429 Too Many Requests` status codes.
--   **Language / Naming**: The node inputs and configurations follow n8n's English developer standards for integration readability, but directly map properties precisely to PipeRun’s Portuguese endpoints (`/pessoas`, `/negocios`) in the background payload.
--   **Pagination**: Listing operations utilize standard limit queries up to 500 items per request, actively mapped to the n8n "Return All" pagination mechanism. Use `Return All` if downloading massive datasets.
+-   **Rate Limiting**: The PipeRun API allows up to **100 requests per minute**. In workflows with loops or bulk operations, add a **Wait** node to avoid `429 Too Many Requests` errors.
+
+-   **Pagination**: All `List` operations support automatic pagination. Toggle **Return All** to fetch every record, or set a **Limit** to cap results.
+
+-   **Proposal IDs vs Deal IDs**: These are different resources with different ID sequences. To find a proposal for a specific deal, use **Proposal → List** with the `Deal ID` filter inside _Additional Filters_ — do **not** pass a deal ID directly to **Proposal → Get**.
+
+-   **Multiple Inputs (n8n loop behavior)**: When a List node receives multiple input items, n8n executes the operation once per input item. Use a **Filter** node before a **Get** operation if you only need to process a specific subset of items.
+
+-   **Custom Fields**: For deals, persons, and companies, custom fields can be set via the _Additional Options_ collection in Create/Update operations. Use the field's **hash** (not the display name) as the identifier.
+
+---
+
+## 🔗 Related Links
+
+-   [PipeRun API Reference](https://developers.pipe.run/)
+-   [n8n Community Nodes Documentation](https://docs.n8n.io/integrations/community-nodes/)
+-   [n8n Community Forum](https://community.n8n.io/)
+
+---
 
 ## 📝 License
 

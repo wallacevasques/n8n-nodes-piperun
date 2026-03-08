@@ -1,14 +1,27 @@
 {
   "name": "n8n-nodes-piperun",
-  "version": "0.1.0",
-  "description": "n8n community node for PipeRun CRM. Automate your sales pipeline, manage deals, persons, companies, proposals, and notes seamlessly.",
+  "version": "0.2.0",
+  "description": "Unofficial n8n community node for PipeRun CRM. Automate your sales pipeline with full support for Deals, Persons, Companies, Proposals, Signatures, Notes, Activities, Tags, Funnels and more.",
   "keywords": [
     "n8n-community-node-package",
     "piperun",
-    "crm"
+    "crm",
+    "sales",
+    "automation",
+    "pipeline",
+    "piperun-crm",
+    "n8n"
   ],
   "license": "MIT",
   "author": "wallacevasques",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wallacevasques/n8n-nodes-piperun"
+  },
+  "homepage": "https://github.com/wallacevasques/n8n-nodes-piperun#readme",
+  "bugs": {
+    "url": "https://github.com/wallacevasques/n8n-nodes-piperun/issues"
+  },
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc && gulp build:icons",

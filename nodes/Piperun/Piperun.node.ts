@@ -154,6 +154,12 @@ export class Piperun implements INodeType {
 											property: "data",
 										},
 									},
+									{
+										type: "limit",
+										properties: {
+											maxResults: "={{$parameter.limit}}",
+										},
+									},
 								],
 							},
 							operations: {
@@ -259,6 +265,12 @@ export class Piperun implements INodeType {
 											property: "data",
 										},
 									},
+									{
+										type: "limit",
+										properties: {
+											maxResults: "={{$parameter.limit}}",
+										},
+									},
 								],
 							},
 							operations: {
@@ -303,6 +315,171 @@ export class Piperun implements INodeType {
 							},
 						},
 					},
+					{
+						name: "List Origin Groups",
+						value: "listOriginGroups",
+						description:
+							"List groups of origins for opportunities.",
+						action: "List origin groups",
+						routing: {
+							request: {
+								method: "GET",
+								url: "originGroups",
+							},
+							output: {
+								postReceive: [
+									{
+										type: "rootProperty",
+										properties: {
+											property: "data",
+										},
+									},
+									{
+										type: "limit",
+										properties: {
+											maxResults: "={{$parameter.limit}}",
+										},
+									},
+								],
+							},
+							operations: {
+								pagination: {
+									type: "generic",
+									properties: {
+										continue:
+											"={{!!$response.body.meta.cursor.next}}",
+										request: {
+											qs: {
+												cursor: "={{$response.body.meta.cursor.next}}",
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						name: "Get Origin Group",
+						value: "getOriginGroup",
+						description: "Get details of a specific origin group.",
+						action: "Get an origin group",
+						routing: {
+							request: {
+								method: "GET",
+								url: '=originGroups/{{$parameter["id"]}}',
+							},
+						},
+					},
+					{
+						name: "List Linked Items",
+						value: "listLinkedItems",
+						description:
+							"List items (products) linked to a specific deal.",
+						action: "List linked items",
+						routing: {
+							request: {
+								method: "GET",
+								url: '=deals/{{$parameter["deal_id"]}}/product',
+							},
+							output: {
+								postReceive: [
+									{
+										type: "rootProperty",
+										properties: {
+											property: "data",
+										},
+									},
+									{
+										type: "limit",
+										properties: {
+											maxResults: "={{$parameter.limit}}",
+										},
+									},
+								],
+							},
+							operations: {
+								pagination: {
+									type: "generic",
+									properties: {
+										continue:
+											"={{!!$response.body.meta.cursor.next}}",
+										request: {
+											qs: {
+												cursor: "={{$response.body.meta.cursor.next}}",
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						name: "Get Linked Item",
+						value: "getLinkedItem",
+						description: "Get details of a specific linked item.",
+						action: "Get a linked item",
+						routing: {
+							request: {
+								method: "GET",
+								url: '=deals/{{$parameter["deal_id"]}}/product/{{$parameter["id"]}}',
+							},
+						},
+					},
+					{
+						name: "List Origins",
+						value: "listOrigins",
+						description: "List opportunity origins.",
+						action: "List origins",
+						routing: {
+							request: {
+								method: "GET",
+								url: "origins",
+							},
+							output: {
+								postReceive: [
+									{
+										type: "rootProperty",
+										properties: {
+											property: "data",
+										},
+									},
+									{
+										type: "limit",
+										properties: {
+											maxResults: "={{$parameter.limit}}",
+										},
+									},
+								],
+							},
+							operations: {
+								pagination: {
+									type: "generic",
+									properties: {
+										continue:
+											"={{!!$response.body.meta.cursor.next}}",
+										request: {
+											qs: {
+												cursor: "={{$response.body.meta.cursor.next}}",
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						name: "Get Origin",
+						value: "getOrigin",
+						description:
+							"Get details of a specific opportunity origin.",
+						action: "Get an origin",
+						routing: {
+							request: {
+								method: "GET",
+								url: '=origins/{{$parameter["id"]}}',
+							},
+						},
+					},
 				],
 				default: "list",
 			},
@@ -310,38 +487,216 @@ export class Piperun implements INodeType {
 			// ----------------------------------
 			//      List Filters (Query)
 			// ----------------------------------
+			// ----------------------------------
+			//        Person Filters (Query)
+			// ----------------------------------
 			{
-				displayName: "Deal Status",
-				name: "status",
-				type: "options",
+				displayName: "Additional Filters",
+				name: "personListAdditionalFilters",
+				type: "collection",
+				placeholder: "Add Filter",
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ["person"],
+						operation: ["list"],
+					},
+				},
 				options: [
 					{
-						name: "Open",
-						value: "1",
+						displayName: "Name",
+						name: "name",
+						type: "string",
+						default: "",
+						routing: { send: { property: "name", type: "query" } },
 					},
 					{
-						name: "Won",
-						value: "2",
+						displayName: "Email",
+						name: "email",
+						type: "string",
+						default: "",
+						routing: { send: { property: "email", type: "query" } },
 					},
 					{
-						name: "Lost",
-						value: "3",
+						displayName: "CPF",
+						name: "cpf",
+						type: "string",
+						default: "",
+						routing: { send: { property: "cpf", type: "query" } },
 					},
 				],
-				default: "1",
+			},
+
+			// ----------------------------------
+			//        Company Filters (Query)
+			// ----------------------------------
+			{
+				displayName: "Additional Filters",
+				name: "companyListAdditionalFilters",
+				type: "collection",
+				placeholder: "Add Filter",
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ["company"],
+						operation: ["list"],
+					},
+				},
+				options: [
+					{
+						displayName: "Name",
+						name: "name",
+						type: "string",
+						default: "",
+						routing: { send: { property: "name", type: "query" } },
+					},
+					{
+						displayName: "CNPJ",
+						name: "cnpj",
+						type: "string",
+						default: "",
+						routing: { send: { property: "cnpj", type: "query" } },
+					},
+				],
+			},
+
+			// ----------------------------------
+			//      Deal Filters (Query)
+			// ----------------------------------
+			{
+				displayName: "Additional Filters",
+				name: "dealListAdditionalFilters",
+				type: "collection",
+				placeholder: "Add Filter",
+				default: {},
 				displayOptions: {
 					show: {
 						resource: ["deal"],
 						operation: ["list"],
 					},
 				},
-				description: "Filter deals by current status.",
-				routing: {
-					send: {
-						type: "query",
-						property: "status",
+				options: [
+					{
+						displayName: "Status",
+						name: "status",
+						type: "options",
+						options: [
+							{ name: "Open", value: "0" },
+							{ name: "Won", value: "1" },
+							{ name: "Lost", value: "3" },
+						],
+						default: "0",
+						routing: {
+							send: { property: "status", type: "query" },
+						},
 					},
-				},
+					{
+						displayName: "Person ID",
+						name: "person_id",
+						type: "string",
+						default: "",
+						routing: {
+							send: { property: "person_id", type: "query" },
+						},
+					},
+					{
+						displayName: "Company ID",
+						name: "company_id",
+						type: "string",
+						default: "",
+						routing: {
+							send: { property: "company_id", type: "query" },
+						},
+					},
+					{
+						displayName: "Owner ID",
+						name: "owner_id",
+						type: "string",
+						default: "",
+						routing: {
+							send: { property: "owner_id", type: "query" },
+						},
+					},
+					{
+						displayName: "Pipeline ID",
+						name: "pipeline_id",
+						type: "string",
+						default: "",
+						routing: {
+							send: { property: "pipeline_id", type: "query" },
+						},
+					},
+					{
+						displayName: "Stage ID",
+						name: "stage_id",
+						type: "string",
+						default: "",
+						routing: {
+							send: { property: "stage_id", type: "query" },
+						},
+					},
+					{
+						displayName: "Title",
+						name: "title",
+						type: "string",
+						default: "",
+						routing: { send: { property: "title", type: "query" } },
+					},
+
+					{
+						displayName: "Sort",
+						name: "sort",
+						type: "options",
+						options: [
+							{ name: "Ascending", value: "ASC" },
+							{ name: "Descending", value: "DESC" },
+						],
+						default: "DESC",
+						routing: { send: { property: "sort", type: "query" } },
+					},
+					{
+						displayName: "With (Relations)",
+						name: "with",
+						type: "string",
+						default: "items,persons,companies",
+						description:
+							"Comma separated list of relations to include (e.g., items,persons,companies,users).",
+						routing: { send: { property: "with", type: "query" } },
+					},
+					{
+						displayName: "Origin ID",
+						name: "origin_id",
+						type: "string",
+						default: "",
+						routing: {
+							send: { property: "origin_id", type: "query" },
+						},
+					},
+					{
+						displayName: "Tag ID",
+						name: "tag_id",
+						type: "string",
+						default: "",
+						routing: {
+							send: { property: "tag_id", type: "query" },
+						},
+					},
+					{
+						displayName: "Temperature",
+						name: "temperature",
+						type: "options",
+						options: [
+							{ name: "Very Hot", value: 1 },
+							{ name: "Hot", value: 2 },
+							{ name: "Warm", value: 3 },
+							{ name: "Cold", value: 4 },
+						],
+						default: 2,
+						routing: {
+							send: { property: "temperature", type: "query" },
+						},
+					},
+				],
 			},
 
 			// ----------------------------------
@@ -411,6 +766,12 @@ export class Piperun implements INodeType {
 										type: "rootProperty",
 										properties: {
 											property: "data",
+										},
+									},
+									{
+										type: "limit",
+										properties: {
+											maxResults: "={{$parameter.limit}}",
 										},
 									},
 								],
@@ -516,6 +877,12 @@ export class Piperun implements INodeType {
 											property: "data",
 										},
 									},
+									{
+										type: "limit",
+										properties: {
+											maxResults: "={{$parameter.limit}}",
+										},
+									},
 								],
 							},
 							operations: {
@@ -552,6 +919,85 @@ export class Piperun implements INodeType {
 			},
 
 			// ----------------------------------
+			//      Activity Filters (Query)
+			// ----------------------------------
+			{
+				displayName: "Additional Filters",
+				name: "activityAdditionalFilters",
+				type: "collection",
+				placeholder: "Add Filter",
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ["activity"],
+						operation: ["list"],
+					},
+				},
+				options: [
+					{
+						displayName: "Status",
+						name: "status",
+						type: "options",
+						options: [
+							{ name: "Open", value: "0" },
+							{ name: "Finished", value: "2" },
+							{ name: "No Show", value: "4" },
+						],
+						default: "0",
+						routing: {
+							send: { property: "status", type: "query" },
+						},
+					},
+					{
+						displayName: "Deal ID",
+						name: "deal_id",
+						type: "string",
+						default: "",
+						routing: {
+							send: { property: "deal_id", type: "query" },
+						},
+					},
+					{
+						displayName: "Owner ID",
+						name: "owner_id",
+						type: "string",
+						default: "",
+						routing: {
+							send: { property: "owner_id", type: "query" },
+						},
+					},
+					{
+						displayName: "Requester ID",
+						name: "requester_id",
+						type: "string",
+						default: "",
+						routing: {
+							send: { property: "requester_id", type: "query" },
+						},
+					},
+					{
+						displayName: "Activity Type ID",
+						name: "activity_type_id",
+						type: "string",
+						default: "",
+						routing: {
+							send: {
+								property: "activity_type_id",
+								type: "query",
+							},
+						},
+					},
+					{
+						displayName: "Title",
+						name: "title",
+						type: "string",
+						default: "",
+						routing: { send: { property: "title", type: "query" } },
+					},
+				],
+			},
+
+			// ----------------------------------
 			//          Funnel Operations
 			// ----------------------------------
 			{
@@ -574,7 +1020,7 @@ export class Piperun implements INodeType {
 						routing: {
 							request: {
 								method: "GET",
-								url: "funnels",
+								url: "pipelines",
 							},
 							output: {
 								postReceive: [
@@ -582,6 +1028,12 @@ export class Piperun implements INodeType {
 										type: "rootProperty",
 										properties: {
 											property: "data",
+										},
+									},
+									{
+										type: "limit",
+										properties: {
+											maxResults: "={{$parameter.limit}}",
 										},
 									},
 								],
@@ -604,6 +1056,44 @@ export class Piperun implements INodeType {
 					},
 				],
 				default: "list",
+			},
+
+			// ----------------------------------
+			//        Funnel Filters (Query)
+			// ----------------------------------
+			{
+				displayName: "Additional Filters",
+				name: "funnelAdditionalFilters",
+				type: "collection",
+				placeholder: "Add Filter",
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ["funnel"],
+						operation: ["list"],
+					},
+				},
+				options: [
+					{
+						displayName: "Name",
+						name: "name",
+						type: "string",
+						default: "",
+						routing: { send: { property: "name", type: "query" } },
+					},
+
+					{
+						displayName: "Sort",
+						name: "sort",
+						type: "options",
+						options: [
+							{ name: "Ascending", value: "ASC" },
+							{ name: "Descending", value: "DESC" },
+						],
+						default: "DESC",
+						routing: { send: { property: "sort", type: "query" } },
+					},
+				],
 			},
 
 			// ----------------------------------
@@ -639,6 +1129,12 @@ export class Piperun implements INodeType {
 											property: "data",
 										},
 									},
+									{
+										type: "limit",
+										properties: {
+											maxResults: "={{$parameter.limit}}",
+										},
+									},
 								],
 							},
 							operations: {
@@ -659,6 +1155,44 @@ export class Piperun implements INodeType {
 					},
 				],
 				default: "list",
+			},
+
+			// ----------------------------------
+			//        Stage Filters (Query)
+			// ----------------------------------
+			{
+				displayName: "Additional Filters",
+				name: "stageAdditionalFilters",
+				type: "collection",
+				placeholder: "Add Filter",
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ["stage"],
+						operation: ["list"],
+					},
+				},
+				options: [
+					{
+						displayName: "Name",
+						name: "name",
+						type: "string",
+						default: "",
+						routing: { send: { property: "name", type: "query" } },
+					},
+
+					{
+						displayName: "Sort",
+						name: "sort",
+						type: "options",
+						options: [
+							{ name: "Ascending", value: "ASC" },
+							{ name: "Descending", value: "DESC" },
+						],
+						default: "DESC",
+						routing: { send: { property: "sort", type: "query" } },
+					},
+				],
 			},
 
 			// ----------------------------------
@@ -731,6 +1265,12 @@ export class Piperun implements INodeType {
 											property: "data",
 										},
 									},
+									{
+										type: "limit",
+										properties: {
+											maxResults: "={{$parameter.limit}}",
+										},
+									},
 								],
 							},
 							operations: {
@@ -769,42 +1309,46 @@ export class Piperun implements INodeType {
 			//        Note Filters (Query)
 			// ----------------------------------
 			{
-				displayName: "Deal ID",
-				name: "filterDealId",
-				type: "string",
-				default: "",
+				displayName: "Additional Filters",
+				name: "noteAdditionalFilters",
+				type: "collection",
+				placeholder: "Add Filter",
+				default: {},
 				displayOptions: {
 					show: {
 						resource: ["note"],
 						operation: ["list"],
 					},
 				},
-				description: "Filter notes by a specific deal ID.",
-				routing: {
-					send: {
-						type: "query",
-						property: "deal_id",
+				options: [
+					{
+						displayName: "User ID",
+						name: "user_id",
+						type: "string",
+						default: "",
+						routing: {
+							send: { property: "user_id", type: "query" },
+						},
 					},
-				},
-			},
-			{
-				displayName: "Person ID",
-				name: "filterPersonId",
-				type: "string",
-				default: "",
-				displayOptions: {
-					show: {
-						resource: ["note"],
-						operation: ["list"],
+					{
+						displayName: "Deal ID",
+						name: "deal_id",
+						type: "string",
+						default: "",
+						routing: {
+							send: { property: "deal_id", type: "query" },
+						},
 					},
-				},
-				description: "Filter notes by a specific person ID.",
-				routing: {
-					send: {
-						type: "query",
-						property: "person_id",
+					{
+						displayName: "Person ID",
+						name: "person_id",
+						type: "string",
+						default: "",
+						routing: {
+							send: { property: "person_id", type: "query" },
+						},
 					},
-				},
+				],
 			},
 
 			// ----------------------------------
@@ -877,40 +1421,10 @@ export class Piperun implements INodeType {
 											property: "data",
 										},
 									},
-								],
-							},
-							operations: {
-								pagination: {
-									type: "generic",
-									properties: {
-										continue:
-											"={{!!$response.body.meta.cursor.next}}",
-										request: {
-											qs: {
-												cursor: "={{$response.body.meta.cursor.next}}",
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-					{
-						name: "List From Deal",
-						value: "listFromDeal",
-						description: "List proposals from a specific deal.",
-						action: "List proposals from a deal",
-						routing: {
-							request: {
-								method: "GET",
-								url: '=deals/{{$parameter["dealId"]}}/proposals',
-							},
-							output: {
-								postReceive: [
 									{
-										type: "rootProperty",
+										type: "limit",
 										properties: {
-											property: "data",
+											maxResults: "={{$parameter.limit}}",
 										},
 									},
 								],
@@ -931,6 +1445,7 @@ export class Piperun implements INodeType {
 							},
 						},
 					},
+
 					{
 						name: "Update",
 						value: "update",
@@ -943,6 +1458,115 @@ export class Piperun implements INodeType {
 							},
 						},
 					},
+					{
+						name: "List Signature Documents",
+						value: "listSignatureDocuments",
+						description: "List documents sent for signatures.",
+						action: "List signature documents",
+						routing: {
+							request: {
+								method: "GET",
+								url: "signatureDocuments",
+							},
+							output: {
+								postReceive: [
+									{
+										type: "rootProperty",
+										properties: {
+											property: "data",
+										},
+									},
+									{
+										type: "limit",
+										properties: {
+											maxResults: "={{$parameter.limit}}",
+										},
+									},
+								],
+							},
+							operations: {
+								pagination: {
+									type: "generic",
+									properties: {
+										continue:
+											"={{!!$response.body.meta.cursor.next}}",
+										request: {
+											qs: {
+												cursor: "={{$response.body.meta.cursor.next}}",
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						name: "Get Signature Document",
+						value: "getSignatureDocument",
+						description:
+							"Get details of a specific signature document.",
+						action: "Get a signature document",
+						routing: {
+							request: {
+								method: "GET",
+								url: '=signatureDocuments/{{$parameter["id"]}}',
+							},
+						},
+					},
+					{
+						name: "List Signatures",
+						value: "listSignatures",
+						description: "List signatures from the CRM.",
+						action: "List signatures",
+						routing: {
+							request: {
+								method: "GET",
+								url: "signatures",
+							},
+							output: {
+								postReceive: [
+									{
+										type: "rootProperty",
+										properties: {
+											property: "data",
+										},
+									},
+									{
+										type: "limit",
+										properties: {
+											maxResults: "={{$parameter.limit}}",
+										},
+									},
+								],
+							},
+							operations: {
+								pagination: {
+									type: "generic",
+									properties: {
+										continue:
+											"={{!!$response.body.meta.cursor.next}}",
+										request: {
+											qs: {
+												cursor: "={{$response.body.meta.cursor.next}}",
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						name: "Get Signature",
+						value: "getSignature",
+						description: "Get details of a specific signature.",
+						action: "Get a signature",
+						routing: {
+							request: {
+								method: "GET",
+								url: '=signatures/{{$parameter["id"]}}',
+							},
+						},
+					},
 				],
 				default: "list",
 			},
@@ -951,102 +1575,104 @@ export class Piperun implements INodeType {
 			//      Proposal Filters (Query)
 			// ----------------------------------
 			{
-				displayName: "Proposal ID",
-				name: "filterProposalId",
-				type: "string",
-				default: "",
+				displayName: "Additional Filters",
+				name: "proposalAdditionalFilters",
+				type: "collection",
+				placeholder: "Add Filter",
+				default: {},
 				displayOptions: {
 					show: {
 						resource: ["proposal"],
 						operation: ["list"],
 					},
 				},
-				description: "Filter proposals by a specific proposal ID.",
-				routing: {
-					send: {
-						type: "query",
-						property: "id",
+				options: [
+					{
+						displayName: "Proposal ID",
+						name: "id",
+						type: "string",
+						default: "",
+						routing: { send: { property: "id", type: "query" } },
 					},
-				},
-			},
-			{
-				displayName: "Deal ID",
-				name: "filterDealIdProposal",
-				type: "string",
-				default: "",
-				displayOptions: {
-					show: {
-						resource: ["proposal"],
-						operation: ["list"],
+					{
+						displayName: "Deal ID",
+						name: "deal_id",
+						type: "string",
+						default: "",
+						routing: {
+							send: { property: "deal_id", type: "query" },
+						},
 					},
-				},
-				description: "Filter proposals by a specific deal ID.",
-				routing: {
-					send: {
-						type: "query",
-						property: "deal_id",
+					{
+						displayName: "Status",
+						name: "status",
+						type: "string",
+						default: "",
+						routing: {
+							send: { property: "status", type: "query" },
+						},
 					},
-				},
-			},
-			{
-				displayName: "Payment Method ID",
-				name: "filterPaymentMethodId",
-				type: "string",
-				default: "",
-				displayOptions: {
-					show: {
-						resource: ["proposal"],
-						operation: ["list"],
+					{
+						displayName: "User ID",
+						name: "user_id",
+						type: "string",
+						default: "",
+						routing: {
+							send: { property: "user_id", type: "query" },
+						},
 					},
-				},
-				description:
-					"Filter proposals by a specific payment method ID.",
-				routing: {
-					send: {
-						type: "query",
-						property: "payment_method_id",
+					{
+						displayName: "Payment Method ID",
+						name: "payment_method_id",
+						type: "string",
+						default: "",
+						routing: {
+							send: {
+								property: "payment_method_id",
+								type: "query",
+							},
+						},
 					},
-				},
-			},
-			{
-				displayName: "MRR Payment Method ID",
-				name: "filterPaymentMethodMrrId",
-				type: "string",
-				default: "",
-				displayOptions: {
-					show: {
-						resource: ["proposal"],
-						operation: ["list"],
+					{
+						displayName: "Payment Method",
+						name: "payment_method",
+						type: "string",
+						default: "",
+						routing: {
+							send: { property: "payment_method", type: "query" },
+						},
 					},
-				},
-				description:
-					"Filter proposals by a specific MRR payment method ID.",
-				routing: {
-					send: {
-						type: "query",
-						property: "payment_method_mrr_id",
+					{
+						displayName: "Due Date",
+						name: "due_date",
+						type: "dateTime",
+						default: "",
+						routing: {
+							send: { property: "due_date", type: "query" },
+						},
 					},
-				},
-			},
-			{
-				displayName: "Payment Method",
-				name: "filterPaymentMethod",
-				type: "string",
-				default: "",
-				displayOptions: {
-					show: {
-						resource: ["proposal"],
-						operation: ["list"],
+					{
+						displayName: "Created At (Start)",
+						name: "created_at_start",
+						type: "dateTime",
+						default: "",
+						routing: {
+							send: {
+								property: "created_at_start",
+								type: "query",
+							},
+						},
 					},
-				},
-				description:
-					"Filter proposals by a specific payment method descriptor or slug.",
-				routing: {
-					send: {
-						type: "query",
-						property: "payment_method",
+					{
+						displayName: "Created At (End)",
+						name: "created_at_end",
+						type: "dateTime",
+						default: "",
+						routing: {
+							send: { property: "created_at_end", type: "query" },
+						},
 					},
-				},
+				],
 			},
 
 			// ----------------------------------
@@ -1095,7 +1721,7 @@ export class Piperun implements INodeType {
 						routing: {
 							request: {
 								method: "GET",
-								url: '=/tags/{{$parameter["id"]}}',
+								url: '=tags/{{$parameter["id"]}}',
 							},
 						},
 					},
@@ -1115,6 +1741,12 @@ export class Piperun implements INodeType {
 										type: "rootProperty",
 										properties: {
 											property: "data",
+										},
+									},
+									{
+										type: "limit",
+										properties: {
+											maxResults: "={{$parameter.limit}}",
 										},
 									},
 								],
@@ -1143,12 +1775,62 @@ export class Piperun implements INodeType {
 						routing: {
 							request: {
 								method: "PUT",
-								url: '=/tags/{{$parameter["id"]}}',
+								url: '=tags/{{$parameter["id"]}}',
 							},
 						},
 					},
 				],
 				default: "list",
+			},
+
+			// ----------------------------------
+			//        Tag Filters (Query)
+			// ----------------------------------
+			{
+				displayName: "Additional Filters",
+				name: "tagAdditionalFilters",
+				type: "collection",
+				placeholder: "Add Filter",
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ["tag"],
+						operation: ["list"],
+					},
+				},
+				options: [
+					{
+						displayName: "Name",
+						name: "name",
+						type: "string",
+						default: "",
+						routing: { send: { property: "name", type: "query" } },
+					},
+					{
+						displayName: "Active",
+						name: "active",
+						type: "boolean",
+						default: true,
+						routing: {
+							send: { property: "active", type: "query" },
+						},
+					},
+
+					{
+						displayName: "Belongs To",
+						name: "belongs",
+						type: "options",
+						options: [
+							{ name: "Persons", value: "1" },
+							{ name: "Deals", value: "2" },
+							{ name: "Companies", value: "3" },
+						],
+						default: "1",
+						routing: {
+							send: { property: "belongs", type: "query" },
+						},
+					},
+				],
 			},
 
 			// ----------------------------------
@@ -1171,61 +1853,349 @@ export class Piperun implements INodeType {
 							"proposal",
 							"tag",
 						],
-						operation: ["get", "update", "delete", "moveToStage"],
+						operation: [
+							"get",
+							"update",
+							"delete",
+							"moveToStage",
+							"getOriginGroup",
+							"getLinkedItem",
+							"getOrigin",
+							"getSignatureDocument",
+							"getSignature",
+						],
 					},
 				},
 				description:
 					"The unique identifier (numeric ID) of the record in the PipeRun database.",
 			},
 
-			{
-				displayName: "Return All",
-				name: "returnAll",
-				type: "boolean",
+						{
+				displayName: 'Return All',
+				name: 'returnAll',
+				type: 'boolean',
 				displayOptions: {
 					show: {
-						operation: ["list", "listFromDeal"],
+						operation: [
+"list",
+							"listOriginGroups",
+							"listOrigins",
+							"listLinkedItems",
+							"listSignatureDocuments",
+							"listSignatures"
+						],
 					},
 				},
 				default: false,
-				description:
-					"Whether to return all results or only up to a limit",
+				description: 'Whether to return all results or only up to a given limit',
 			},
 			{
-				displayName: "Limit",
-				name: "limit",
-				type: "number",
+				displayName: 'Limit',
+				name: 'limit',
+				type: 'number',
 				displayOptions: {
 					show: {
-						operation: ["list", "listFromDeal"],
+						operation: [
+"list",
+							"listOriginGroups",
+							"listOrigins",
+							"listLinkedItems",
+							"listSignatureDocuments",
+							"listSignatures"
+						],
 						returnAll: [false],
 					},
 				},
 				typeOptions: {
 					minValue: 1,
-					maxValue: 500,
 				},
 				default: 50,
-				description: "Max number of results to return",
+				description: 'Max number of results to return',
+			},
+
+			{
+				displayName: "Load Custom Fields",
+				name: "loadCustomFields",
+				type: "boolean",
+				default: false,
+				displayOptions: {
+					show: {
+						resource: ["person", "deal", "company"],
+						operation: ["get", "list"],
+					},
+				},
+				description:
+					"Whether to include custom fields in the response. Adds ?with=customFields to the request.",
+				routing: {
+					send: {
+						type: "query",
+						property: "with",
+						value: '={{$value ? ($parameter["resource"] === "deal" ? "items,persons,companies,customFields" : "customFields") : ($parameter["resource"] === "deal" ? "items,persons,companies" : "")}}',
+					},
+				},
 			},
 
 			// ----------------------------------
 			//           Fields (Body)
 			// ----------------------------------
 			{
-				displayName: "Name/Title",
+				displayName: "Custom Fields",
+				name: "customFields",
+				type: "fixedCollection",
+				placeholder: "Add Custom Field",
+				default: {},
+				typeOptions: {
+					multipleValues: true,
+				},
+				displayOptions: {
+					show: {
+						resource: ["person", "deal", "company"],
+						operation: ["create", "update"],
+					},
+				},
+				description: "The custom fields to set for the record.",
+				options: [
+					{
+						name: "customFieldsValues",
+						displayName: "Custom Field",
+						values: [
+							{
+								displayName: "Field Hash",
+								name: "hash",
+								type: "string",
+								default: "",
+								description:
+									"The unique hash of the custom field.",
+							},
+							{
+								displayName: "Field Value",
+								name: "value",
+								type: "string",
+								default: "",
+								description:
+									"The value to set for the custom field.",
+							},
+						],
+					},
+				],
+				routing: {
+					send: {
+						type: "body",
+						property: "custom_fields",
+						value: "={{$value.customFieldsValues}}",
+					},
+				},
+			},
+			{
+				displayName: "Deal ID",
+				name: "deal_id",
+				type: "string",
+				default: "",
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ["deal"],
+						operation: ["listLinkedItems", "getLinkedItem"],
+					},
+				},
+				description:
+					"The unique identifier of the deal to work with its linked items.",
+			},
+			// ----------------------------------
+			//   Origin Group Filters (Query)
+			// ----------------------------------
+			{
+				displayName: "Additional Filters",
+				name: "originGroupAdditionalFilters",
+				type: "collection",
+				placeholder: "Add Filter",
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ["deal"],
+						operation: ["listOriginGroups"],
+					},
+				},
+				options: [
+					{
+						displayName: "Name",
+						name: "name",
+						type: "string",
+						default: "",
+						routing: { send: { property: "name", type: "query" } },
+					},
+					{
+						displayName: "Active",
+						name: "active",
+						type: "boolean",
+						default: true,
+						routing: {
+							send: { property: "active", type: "query" },
+						},
+					},
+				],
+			},
+			// ----------------------------------
+			//      Origin Filters (Query)
+			// ----------------------------------
+			{
+				displayName: "Additional Filters",
+				name: "originAdditionalFilters",
+				type: "collection",
+				placeholder: "Add Filter",
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ["deal"],
+						operation: ["listOrigins"],
+					},
+				},
+				options: [
+					{
+						displayName: "Name",
+						name: "name",
+						type: "string",
+						default: "",
+						routing: { send: { property: "name", type: "query" } },
+					},
+					{
+						displayName: "Active",
+						name: "active",
+						type: "boolean",
+						default: true,
+						routing: {
+							send: { property: "active", type: "query" },
+						},
+					},
+					{
+						displayName: "Origin Group ID",
+						name: "origin_group_id",
+						type: "string",
+						default: "",
+						routing: {
+							send: {
+								property: "origin_group_id",
+								type: "query",
+							},
+						},
+					},
+					{
+						displayName: "Hash",
+						name: "hash",
+						type: "string",
+						default: "",
+						routing: { send: { property: "hash", type: "query" } },
+					},
+				],
+			},
+			// ----------------------------------
+			// Signature Doc Filters (Query)
+			// ----------------------------------
+			{
+				displayName: "Additional Filters",
+				name: "signatureDocumentAdditionalFilters",
+				type: "collection",
+				placeholder: "Add Filter",
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ["proposal"],
+						operation: ["listSignatureDocuments"],
+					},
+				},
+				options: [
+					{
+						displayName: "Status",
+						name: "status",
+						type: "string",
+						default: "",
+						routing: {
+							send: { property: "status", type: "query" },
+						},
+					},
+					{
+						displayName: "Owner ID",
+						name: "owner_id",
+						type: "string",
+						default: "",
+						routing: {
+							send: { property: "owner_id", type: "query" },
+						},
+					},
+					{
+						displayName: "Pipeline ID",
+						name: "pipeline_id",
+						type: "string",
+						default: "",
+						routing: {
+							send: { property: "pipeline_id", type: "query" },
+						},
+					},
+				],
+			},
+			// ----------------------------------
+			//      Signature Filters (Query)
+			// ----------------------------------
+			{
+				displayName: "Additional Filters",
+				name: "signatureAdditionalFilters",
+				type: "collection",
+				placeholder: "Add Filter",
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ["proposal"],
+						operation: ["listSignatures"],
+					},
+				},
+				options: [
+					{
+						displayName: "Signature Document ID",
+						name: "signature_document_id",
+						type: "string",
+						default: "",
+						routing: {
+							send: {
+								property: "signature_document_id",
+								type: "query",
+							},
+						},
+					},
+				],
+			},
+			{
+				displayName: "Title",
+				name: "title",
+				type: "string",
+				default: "",
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ["deal"],
+						operation: ["create"],
+					},
+				},
+				description: "Title of the deal (e.g., Deal - ABC LTD).",
+				routing: {
+					send: {
+						type: "body",
+						property: "title",
+					},
+				},
+			},
+			{
+				displayName: "Name",
 				name: "name",
 				type: "string",
 				default: "",
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ["person", "deal", "company", "tag"],
+						resource: ["person", "company", "tag"],
 						operation: ["create"],
 					},
 				},
-				description:
-					"Name of the person, company, or deal title (e.g., Deal - ABC LTD).",
+				description: "Name of the person, company, or tag.",
 				routing: {
 					send: {
 						type: "body",
@@ -1304,7 +2274,7 @@ export class Piperun implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ["proposal"],
-						operation: ["create", "listFromDeal"],
+						operation: ["create"],
 					},
 				},
 				description:
@@ -1447,9 +2417,24 @@ export class Piperun implements INodeType {
 						name: "dueDate",
 						type: "dateTime",
 						default: "",
-						description: "Deadline for completing the activity.",
+						description:
+							"Deadline for completing the activity or expected close date for deals.",
 						routing: {
 							send: { property: "due_date", type: "body" },
+						},
+					},
+					{
+						displayName: "Expected Close Date",
+						name: "probablyClosedAt",
+						type: "dateTime",
+						default: "",
+						description:
+							"The date the deal is expected to be closed.",
+						routing: {
+							send: {
+								property: "probably_closed_at",
+								type: "body",
+							},
 						},
 					},
 					{
@@ -1485,10 +2470,59 @@ export class Piperun implements INodeType {
 						name: "probability",
 						type: "number",
 						default: 0,
-						description:
-							"Chance of closing the deal from 0 to 100.",
+						typeOptions: {
+							minValue: 0,
+							maxValue: 90,
+						},
+						description: "Chance of closing the deal from 0 to 90.",
 						routing: {
 							send: { property: "probability", type: "body" },
+						},
+					},
+					{
+						displayName: "Reference",
+						name: "reference",
+						type: "string",
+						default: "",
+						description: "External integration reference ID.",
+						routing: {
+							send: { property: "reference", type: "body" },
+						},
+					},
+					{
+						displayName: "Temperature",
+						name: "temperature",
+						type: "options",
+						options: [
+							{ name: "Very Hot", value: 1 },
+							{ name: "Hot", value: 2 },
+							{ name: "Warm", value: 3 },
+							{ name: "Cold", value: 4 },
+						],
+						default: 2,
+						description: "Heat level of the deal.",
+						routing: {
+							send: { property: "temperature", type: "body" },
+						},
+					},
+					{
+						displayName: "Origin ID",
+						name: "origin_id",
+						type: "string",
+						default: "",
+						description: "ID of the deal's origin/source.",
+						routing: {
+							send: { property: "origin_id", type: "body" },
+						},
+					},
+					{
+						displayName: "Lost Reason ID",
+						name: "lost_reason_id",
+						type: "string",
+						default: "",
+						description: "ID of the reason why the deal was lost.",
+						routing: {
+							send: { property: "lost_reason_id", type: "body" },
 						},
 					},
 					{
@@ -1504,8 +2538,33 @@ export class Piperun implements INodeType {
 						name: "value",
 						type: "number",
 						default: 0,
-						description: "Base monetary value of the deal.",
+						description:
+							"Base monetary value of the deal (products/services).",
 						routing: { send: { property: "value", type: "body" } },
+					},
+					{
+						displayName: "Value MRR",
+						name: "value_mrr",
+						type: "number",
+						default: 0,
+						description:
+							"Monthly Recurring Revenue value of the deal.",
+						routing: {
+							send: { property: "value_mrr", type: "body" },
+						},
+					},
+					{
+						displayName: "Deal Status",
+						name: "status",
+						type: "options",
+						options: [
+							{ name: "Open", value: 0 },
+							{ name: "Won", value: 1 },
+							{ name: "Lost", value: 3 },
+						],
+						default: 0,
+						description: "Current status of the deal.",
+						routing: { send: { property: "status", type: "body" } },
 					},
 					{
 						displayName: "Birthday",
